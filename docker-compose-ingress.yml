@@ -2,14 +2,17 @@ version: '3.5'
 
 services:
   traefik:
-    image: traefik:1.6-alpine # The official Traefik docker image
+    image: traefik:2.0-alpine # The official Traefik docker image
     # command: --api --docker --docker.swarmMode --docker.watch --entryPoints='Name:http Address::80' --defaultentrypoints=http # Enables the web UI and tells Træfik to listen to docker
     command: --api --docker --docker.swarmMode --docker.watch --metrics.prometheus # Enables the web UI and tells Træfik to listen to docker
     ports:
       - "80:80"     # The HTTP port
+      - "443:443"   # HTTPS port
       - "3030:8080" # The Web UI (enabled by --api)
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock # So that Traefik can listen to the Docker events
+      - ${DIR_PERSISTANT_FOLDER}/traefik/traefik.toml:/traefik.toml
+      - ${DIR_PERSISTANT_FOLDER}/traefik/acme.json:/acme.json
     deploy:
       placement:
         constraints:
