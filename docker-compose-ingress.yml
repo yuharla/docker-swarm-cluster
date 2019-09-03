@@ -11,15 +11,17 @@ services:
       - "3030:8080" # The Web UI (enabled by --api)
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock # So that Traefik can listen to the Docker events
-      - ${DIR_PERSISTANT_FOLDER}/traefik/traefik.toml:/traefik.toml
-      - ${DIR_PERSISTANT_FOLDER}/traefik/acme.json:/acme.json
+      - ${DIR_PERSISTANT_FOLDER}/traefik/traefik.toml:/traefik.toml # configuration Traefik pour https et htaccess on managment webui
+      - ${DIR_PERSISTANT_FOLDER}/traefik/acme.json:/acme.json 
     deploy:
+      replicas: 1
       placement:
         constraints:
           - node.role == manager
     networks:
       - metrics-net
       - traefik-net
+    container_name: traefik
 
 networks:
   traefik-net:
