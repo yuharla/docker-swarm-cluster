@@ -9,9 +9,8 @@ defaultEntryPoints = ["https","http"]
 #Enable Traefik Dashboard on port 8080
 #with basic authentication method
 [web]
-address = ":8080"
-[web.auth.basic]
-users = ["HTACCESS_USER:HTACCESS_PASSWORD"]
+address = "traefik.CLUSTER_DOMAIN:8080"
+
 
 #Define the HTTP port 80 and
 #HTTPS port 443 EntryPoint
@@ -34,6 +33,7 @@ endpoint = "unix:///var/run/docker.sock"
 domain = "traefik.CLUSTER_DOMAIN"
 watch = true
 exposedbydefault = false
+swarmMode = true
 
 #Letsencrypt Registration
 #Define the Letsencrypt ACME HTTP challenge

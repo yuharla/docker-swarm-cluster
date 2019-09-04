@@ -13,6 +13,7 @@ services:
       labels:
         traefik.frontend.rule: Host:dashboard.${CLUSTER_DOMAIN}
         traefik.port: 8080
+        traefik.frontend.auth.basic: "${HTACCESS_USER}:${HTACCESS_PASSWORD}"
         traefik.docker.network: traefik-net
       replicas: 1
       placement:
