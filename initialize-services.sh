@@ -131,14 +131,15 @@ displaytitle 'Configuration Traefik'
 displayandexec "Create permanent directory for traefik" &mkdir -p $DIR_PERSISTANT_FOLDER/traefik
 displayandexec "Copy configuration file traefik.toml" &cp -f ./traefik/traefik.toml $DIR_PERSISTANT_FOLDER/traefik/
 displayandexec "Change value in traefik" &sed -i "s#CLUSTER_DOMAIN#$CLUSTER_DOMAIN#" $DIR_PERSISTANT_FOLDER/traefik/traefik.toml && &sed -i "s#ADMIN_EMAIL#$ADMIN_EMAIL#" $DIR_PERSISTANT_FOLDER/traefik/traefik.toml
-
 displayandexec "Create ACME file" &touch  $DIR_PERSISTANT_FOLDER/traefik/acme.json && chmod 600 $DIR_PERSISTANT_FOLDER/traefik/acme.json
+displayandexec "Create persist Portainer folder"  &mkdir -p $DIR_PERSISTANT_FOLDER/portainer
 
 
 displaytitle 'Create docker network'
 
 displayandexec "Create netwok Docker for traefik" &docker network create traefik-net --scope swarm -d overlay
 displayandexec "Create network Docker for Metrics" &docker network create metrics-net --scope swarm -d overlay
+displayandexec "Create network Docker for Admin" &docker network create admin-net --scope swarm -d overlay
 
 displaytitle "Create docker"
 
@@ -152,4 +153,8 @@ displaytitle 'Check all sub domain name to manage your docker swarm'
 
 displaymessage "Check Traefik managment URL"
 verifyDns traefik.$CLUSTER_DOMAIN 
+displaymessage "Check portainer managment Docker URL"
+verifyDns portainer.$CLUSTER_DOMAIN 
+displaymessage "Check Feeds managment URL"
+verifyDns feeds.$CLUSTER_DOMAIN 
 
