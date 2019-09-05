@@ -119,8 +119,9 @@ if [ $HTACCESS_PASSWORD = admin ];then
         displaymessage "Choose new HTACCESS password"
         read HTACCESS_PASSWORD
         validemessage "confirm HTACCESS password :  $HTACCESS_PASSWORD"
-        export HTACCESS_PASSWORD=$HTACCESS_PASSWORD
 fi
+        export HTACCESS_PASSWORD=$(openssl passwd -crypt $HTACCESS_PASSWORD)
+
 
 if [ $CLUSTER_DOMAIN = mycluster.org ];then
         displayerror "You don't have change your domain name."
@@ -150,9 +151,9 @@ displayandexec "Create persist Portainer folder"  &mkdir -p $DIR_PERSISTANT_FOLD
 
 displaytitle 'Create docker network'
 
-displayandexec "Create netwok Docker for Traefik" &docker network create traefik-net --scope swarm -d overlay
-displayandexec "Create network Docker for Metrics" &docker network create metrics-net --scope swarm -d overlay
-displayandexec "Create network Docker for Admin" &docker network create admin-net --scope swarm -d overlay
+displayandexec "Create netwok Docker for Traefik" &docker network create traefik-net --scope swarm -d overlay --opt encrypted=true
+displayandexec "Create network Docker for Metrics" &docker network create metrics-net --scope swarm -d overlay --opt encrypted=true
+displayandexec "Create network Docker for Admin" &docker network create admin-net --scope swarm -d overlay --opt encrypted=true
 
 displaytitle "Create docker"
 
