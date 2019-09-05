@@ -113,6 +113,7 @@ if [ $ADMIN_PASSWORD = admin ];then
         validemessage "confirm admin password :  $ADMIN_PASSWORD"
         export ADMIN_PASSWORD=$ADMIN_PASSWORD
 fi
+export ADMIN_PASSWORD_CRYPT=$(docker run --rm httpd:2.4-alpine htpasswd -nbB admin $ADMIN_PASSWORD | cut -d ":" -f 2 )
 
 if [ $HTACCESS_PASSWORD = admin ];then
         displayerror "You don't have change HTACCESS password."
@@ -120,7 +121,7 @@ if [ $HTACCESS_PASSWORD = admin ];then
         read HTACCESS_PASSWORD
         validemessage "confirm HTACCESS password :  $HTACCESS_PASSWORD"
 fi
-        export HTACCESS_PASSWORD=$(openssl passwd -crypt $HTACCESS_PASSWORD)
+        export HTACCESS_PASSWORD=$(docker run --rm httpd:2.4-alpine htpasswd -nbB admin $HTACCESS_PASSWORD | cut -d ":" -f 2 )
 
 
 if [ $CLUSTER_DOMAIN = mycluster.org ];then
