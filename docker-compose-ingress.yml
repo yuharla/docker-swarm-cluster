@@ -21,7 +21,6 @@ services:
     networks:
       - metrics-net
       - traefik-net
-    container_name: traefik
 
 networks:
   traefik-net:

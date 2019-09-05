@@ -106,20 +106,28 @@ if [ $ENABLE_SCRIPT_RUN = 1 ];then
         fi
 fi
 # Password Verification
-if [ ADMIN_PASSWORD = admin ];then
+if [ $ADMIN_PASSWORD = admin ];then
         displayerror "You don't have change admin password."
         displaymessage "Choose new admin password"
         read ADMIN_PASSWORD
         validemessage "confirm admin password :  $ADMIN_PASSWORD"
-        export ADMIN_PASSWORD
+        export ADMIN_PASSWORD=$ADMIN_PASSWORD
 fi
 
-if [ HTACCESS_PASSWORD = admin ];then
+if [ $HTACCESS_PASSWORD = admin ];then
         displayerror "You don't have change HTACCESS password."
         displaymessage "Choose new HTACCESS password"
         read HTACCESS_PASSWORD
         validemessage "confirm HTACCESS password :  $HTACCESS_PASSWORD"
-        export HTACCESS_PASSWORD
+        export HTACCESS_PASSWORD=$HTACCESS_PASSWORD
+fi
+
+if [ $CLUSTER_DOMAIN = mycluster.org ];then
+        displayerror "You don't have change your domain name."
+        displaymessage "Choose new domaine name (without www.)"
+        read CLUSTER_DOMAIN
+        validemessage "confirm Domaine Name :  $CLUSTER_DOMAIN"
+        export CLUSTER_DOMAIN=$CLUSTER_DOMAIN
 fi
 # Directory verification
 
@@ -133,16 +141,16 @@ fi
 # preparation and verification of the environment
 
 displaytitle 'Configuration Traefik'
-displayandexec "Create permanent directory for traefik" &mkdir -p $DIR_PERSISTANT_FOLDER/traefik
+displayandexec "Create permanent directory for Traefik" &mkdir -p $DIR_PERSISTANT_FOLDER/traefik
 displayandexec "Copy configuration file traefik.toml" &cp -f ./traefik/traefik.toml $DIR_PERSISTANT_FOLDER/traefik/
-displayandexec "Change value in traefik" &sed -i "s#CLUSTER_DOMAIN#$CLUSTER_DOMAIN#" $DIR_PERSISTANT_FOLDER/traefik/traefik.toml && sed -i "s#ADMIN_EMAIL#$ADMIN_EMAIL#" $DIR_PERSISTANT_FOLDER/traefik/traefik.toml
+displayandexec "Change value in Traefik" &sed -i "s#CLUSTER_DOMAIN#$CLUSTER_DOMAIN#" $DIR_PERSISTANT_FOLDER/traefik/traefik.toml && sed -i "s#ADMIN_EMAIL#$ADMIN_EMAIL#" $DIR_PERSISTANT_FOLDER/traefik/traefik.toml
 displayandexec "Create ACME file" &touch  $DIR_PERSISTANT_FOLDER/traefik/acme.json && chmod 600 $DIR_PERSISTANT_FOLDER/traefik/acme.json
 displayandexec "Create persist Portainer folder"  &mkdir -p $DIR_PERSISTANT_FOLDER/portainer
 
 
 displaytitle 'Create docker network'
 
-displayandexec "Create netwok Docker for traefik" &docker network create traefik-net --scope swarm -d overlay
+displayandexec "Create netwok Docker for Traefik" &docker network create traefik-net --scope swarm -d overlay
 displayandexec "Create network Docker for Metrics" &docker network create metrics-net --scope swarm -d overlay
 displayandexec "Create network Docker for Admin" &docker network create admin-net --scope swarm -d overlay
 
