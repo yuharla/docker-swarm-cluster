@@ -11,6 +11,11 @@ ENABLE_VERIF_ROOT=1
 # have to check that the script is not already running (1=yes 0=no)
 ENABLE_SCRIPT_RUN=0
 
+DATE=`date +"%Y%m%d%H%M%S"`
+TEMP_FOLDER="/tmp/$SCRIPTNAME.$DATE"
+LOG_FOLDER="/tmp/"
+LOG_FILE="$LOG_FOLDER$SCRIPTNAME-$DATE.log"
+
 displaymessage() {
   echo "$*"
 }
