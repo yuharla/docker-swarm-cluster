@@ -38,7 +38,6 @@ services:
       labels:
         traefik.frontend.rule: Host:portainer.${CLUSTER_DOMAIN}
         traefik.port: 9000
-        traefik.frontend.auth.basic: "${HTACCESS_USER}:${HTACCESS_PASSWORD}"
         traefik.docker.network: traefik-net
       replicas: 1
       placement:
