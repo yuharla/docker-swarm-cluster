@@ -28,7 +28,7 @@ services:
       - traefik-net
 
   portainer:
-    image: portainer/portainer:1.19.0
+    image: portainer/portainer:1.22.0
     command: -H tcp://tasks.agent:9001 --tlsskipverify --admin-password "${ADMIN_PASSWORD_CRYPT}"
     ports:
       - 5050:9000
@@ -37,6 +37,7 @@ services:
     deploy:
       labels:
         traefik.frontend.rule: Host:portainer.${CLUSTER_DOMAIN}
+        traefik.protocol: http
         traefik.port: 9000
         traefik.docker.network: traefik-net
       replicas: 1
