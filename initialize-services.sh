@@ -106,22 +106,26 @@ if [ $ENABLE_SCRIPT_RUN = 1 ];then
         fi
 fi
 # Password Verification
-if [ $ADMIN_PASSWORD = admin ];then
+if [ $ADMIN_PASSWORD = adminUser ];then
         displayerror "You don't have change admin password."
         displaymessage "Choose new admin password"
         read ADMIN_PASSWORD
         validemessage "confirm admin password :  $ADMIN_PASSWORD"
         export ADMIN_PASSWORD=$ADMIN_PASSWORD
+        sed -i "s#HTACCESS_PASSWORD#$HTACCESS_PASSWORD#" ./.env
+
 fi
 export ADMIN_PASSWORD_CRYPT=$(docker run --rm httpd:2.4-alpine htpasswd -nbB admin $ADMIN_PASSWORD | cut -d ":" -f 2 )
+export ADMIN_PASSWORD_CRYPT_SHA256=$(echo $ADMIN_PASSWORD | sha256sum | cut -d" " -f1)
 
-if [ $HTACCESS_PASSWORD = admin ];then
+if [ $HTACCESS_PASSWORD = adminHtaccess ];then
         displayerror "You don't have change HTACCESS password."
         displaymessage "Choose new HTACCESS password"
         read HTACCESS_PASSWORD
         validemessage "confirm HTACCESS password :  $HTACCESS_PASSWORD"
+        sed -i "s#HTACCESS_PASSWORD#$HTACCESS_PASSWORD#" ./.env
 fi
-        export HTACCESS_PASSWORD=$(docker run --rm httpd:2.4-alpine htpasswd -nbB admin $HTACCESS_PASSWORD | cut -d ":" -f 2 )
+        export HTACCESS_PASSWORD_CRYPT=$(docker run --rm httpd:2.4-alpine htpasswd -nbB admin $HTACCESS_PASSWORD | cut -d ":" -f 2 )
 
 
 if [ $CLUSTER_DOMAIN = mycluster.org ];then
@@ -130,13 +134,19 @@ if [ $CLUSTER_DOMAIN = mycluster.org ];then
         read CLUSTER_DOMAIN
         validemessage "confirm Domaine Name :  $CLUSTER_DOMAIN"
         export CLUSTER_DOMAIN=$CLUSTER_DOMAIN
+        sed -i "s#CLUSTER_DOMAIN#$CLUSTER_DOMAIN#" ./.env
 fi
+
+if [ $RANDOM_SECRET = changeit ];then
+displayandexec "Generate random secret" &export RANDOM_SECRET=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
+sed -i "s#RANDOM_SECRET#$RANDOM_SECRET#" ./.env
+fi
+
 # Directory verification
 
 if [ ! -d $DIR_PERSISTANT_FOLDER ];then
 displayandexec "Create permanent directory" &mkdir -p $DIR_PERSISTANT_FOLDER
 fi
-
 
 
 
@@ -158,6 +168,8 @@ displayandexec "Create network Docker for Admin" &docker network create admin-ne
 
 displaytitle "Create docker"
 
+displayandexec "CREATING LOGS SERVICES STACK..." &docker stack deploy --compose-file docker-compose-log.yml Graylog
+
 displayandexec "CREATING INGRESS SERVICES STACK..." &docker stack deploy --compose-file docker-compose-ingress.yml ingress
 
 displayandexec "CREATING ADMINISTRATION SERVICES STACK..." &docker stack deploy --compose-file docker-compose-admin.yml admin
@@ -166,10 +178,17 @@ displayandexec "CREATING METRICS SERVICES STACK..." &docker stack deploy --compo
 
 displaytitle 'Check all sub domain name to manage your docker swarm'
 
+displaymessage "Check Graylog managment URL"
+verifyDns graylog.$CLUSTER_DOMAIN 
 displaymessage "Check Traefik managment URL"
 verifyDns traefik.$CLUSTER_DOMAIN 
 displaymessage "Check portainer managment Docker URL"
 verifyDns portainer.$CLUSTER_DOMAIN 
 displaymessage "Check Feeds managment URL"
 verifyDns feeds.$CLUSTER_DOMAIN 
-
+displaymessage "Check Grafana managment URL"
+verifyDns grafana.$CLUSTER_DOMAIN 
+displaymessage "Check Dashboard managment URL"
+verifyDns dashboard.$CLUSTER_DOMAIN prometheus
+displaymessage "Check Prometheus managment URL"
+verifyDns prometheus.$CLUSTER_DOMAIN

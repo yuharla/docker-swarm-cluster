@@ -21,6 +21,11 @@ services:
     networks:
       - metrics-net
       - traefik-net
+    logging:
+      driver: "gelf"
+      options:
+        gelf-address: "udp://graylog.${CLUSTER_DOMAIN}:12201"
+        tag: "traefik-docker-swarm-cluster"
 
 networks:
   traefik-net:
