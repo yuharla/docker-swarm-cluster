@@ -37,7 +37,7 @@ services:
     deploy:
       labels:
         traefik.frontend.rule: Host:portainer.${CLUSTER_DOMAIN}
-        traefik.protocol: http
+        traefik.protocol: https
         traefik.port: 9000
         traefik.docker.network: traefik-net
       replicas: 1
