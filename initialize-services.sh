@@ -168,9 +168,9 @@ displayandexec "Create network Docker for Admin" &docker network create admin-ne
 
 displaytitle "Create docker"
 
-displayandexec "CREATING LOGS SERVICES STACK..." &docker stack deploy --compose-file docker-compose-log.yml Graylog
-
 displayandexec "CREATING INGRESS SERVICES STACK..." &docker stack deploy --compose-file docker-compose-ingress.yml ingress
+
+displayandexec "CREATING LOGS SERVICES STACK..." &docker stack deploy --compose-file docker-compose-log.yml logs
 
 displayandexec "CREATING ADMINISTRATION SERVICES STACK..." &docker stack deploy --compose-file docker-compose-admin.yml admin
 
