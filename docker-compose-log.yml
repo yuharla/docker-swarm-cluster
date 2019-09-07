@@ -76,7 +76,7 @@ services:
       placement:
         constraints:
           - node.role == manager
-      network:
+    network:
       - admin-net
       - traefik-net
 
@@ -90,7 +90,7 @@ volumes:
   graylog_journal:
     driver: local
 
-  networks:
+networks:
   admin-net:
     driver: overlay
     attachable: true
