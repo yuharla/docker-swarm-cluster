@@ -5,7 +5,7 @@ services:
     image: mongo:3
     volumes:
       - mongo_data:/data/db
-    network:
+    networks:
       - admin-net
     logging:
       driver: "gelf"
@@ -32,7 +32,7 @@ services:
       placement:
         constraints:
           - node.role == manager 
-    network:
+    networks:
       - admin-net
     logging:
       driver: "gelf"
