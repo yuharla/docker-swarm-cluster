@@ -89,3 +89,10 @@ volumes:
     driver: local
   graylog_journal:
     driver: local
+
+  networks:
+  admin-net:
+    driver: overlay
+    attachable: true
+  traefik-net:
+    external: true
