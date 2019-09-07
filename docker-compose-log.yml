@@ -1,6 +1,6 @@
-version: '2'
-services:
+version: '3.5'
 
+services:
   mongodbGraylog:
     image: mongo:3
     volumes:
