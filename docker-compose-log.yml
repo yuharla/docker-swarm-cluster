@@ -76,7 +76,7 @@ services:
       placement:
         constraints:
           - node.role == manager
-    network:
+    networks:
       - admin-net
       - traefik-net
 
