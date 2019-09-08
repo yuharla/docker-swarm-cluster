@@ -1,7 +1,7 @@
 version: '3.5'
 
 services:
-  mongodb:
+  mongo:
     image: mongo:3
     volumes:
       - mongo_data:/data/db
@@ -50,11 +50,8 @@ services:
       # Password: admin
       - GRAYLOG_ROOT_PASSWORD_SHA2=${ADMIN_PASSWORD_CRYPT_SHA256}
       - GRAYLOG_HTTP_EXTERNAL_URI=https://graylog.${CLUSTER_DOMAIN}/
-    links:
-      - mongodb:mongo
-      - elasticsearch
     depends_on:
-      - mongodb
+      - mongo
       - elasticsearch
     ports:
       # Graylog web interface and REST API
