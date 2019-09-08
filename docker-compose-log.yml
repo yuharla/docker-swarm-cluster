@@ -1,7 +1,7 @@
 version: '3.5'
 
 services:
-  mongodbGraylog:
+  mongodb:
     image: mongo:3
     volumes:
       - mongo_data:/data/db
@@ -18,7 +18,7 @@ services:
         constraints:
           - node.role == manager 
 
-  elasticsearchGraylog:
+  elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch-oss:6.8.2
     volumes:
       - es_data:/usr/share/elasticsearch/data
@@ -51,11 +51,11 @@ services:
       - GRAYLOG_ROOT_PASSWORD_SHA2=${ADMIN_PASSWORD_CRYPT_SHA256}
       - GRAYLOG_HTTP_EXTERNAL_URI=https://graylog.${CLUSTER_DOMAIN}/
     links:
-      - mongodbGraylog:mongo
-      - elasticsearchGraylog
+      - mongodb:mongo
+      - elasticsearch
     depends_on:
-      - mongodbGraylog
-      - elasticsearchGraylog
+      - mongodb
+      - elasticsearch
     ports:
       # Graylog web interface and REST API
       - 9000:9000
