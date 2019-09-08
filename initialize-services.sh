@@ -112,7 +112,7 @@ if [ $ADMIN_PASSWORD = adminUser ];then
         read ADMIN_PASSWORD
         validemessage "confirm admin password :  $ADMIN_PASSWORD"
         export ADMIN_PASSWORD=$ADMIN_PASSWORD
-        sed -i "s#HTACCESS_PASSWORD#$HTACCESS_PASSWORD#" ./.env
+        sed -i "s#adminUser#$ADMIN_PASSWORD#" ./.env
 
 fi
 export ADMIN_PASSWORD_CRYPT=$(docker run --rm httpd:2.4-alpine htpasswd -nbB admin $ADMIN_PASSWORD | cut -d ":" -f 2 )
@@ -123,7 +123,7 @@ if [ $HTACCESS_PASSWORD = adminHtaccess ];then
         displaymessage "Choose new HTACCESS password"
         read HTACCESS_PASSWORD
         validemessage "confirm HTACCESS password :  $HTACCESS_PASSWORD"
-        sed -i "s#HTACCESS_PASSWORD#$HTACCESS_PASSWORD#" ./.env
+        sed -i "s#adminHtaccess#$HTACCESS_PASSWORD#" ./.env
 fi
         export HTACCESS_PASSWORD_CRYPT=$(docker run --rm httpd:2.4-alpine htpasswd -nbB admin $HTACCESS_PASSWORD | cut -d ":" -f 2 )
 
@@ -134,12 +134,12 @@ if [ $CLUSTER_DOMAIN = mycluster.org ];then
         read CLUSTER_DOMAIN
         validemessage "confirm Domaine Name :  $CLUSTER_DOMAIN"
         export CLUSTER_DOMAIN=$CLUSTER_DOMAIN
-        sed -i "s#CLUSTER_DOMAIN#$CLUSTER_DOMAIN#" ./.env
+        sed -i "s#mycluster.org#$CLUSTER_DOMAIN#" ./.env
 fi
 
 if [ $RANDOM_SECRET = changeit ];then
 displayandexec "Generate random secret" &export RANDOM_SECRET=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
-sed -i "s#RANDOM_SECRET#$RANDOM_SECRET#" ./.env
+sed -i "s#changeit#$RANDOM_SECRET#" ./.env
 fi
 
 # Directory verification
