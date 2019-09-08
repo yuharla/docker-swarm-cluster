@@ -106,7 +106,7 @@ if [ $ENABLE_SCRIPT_RUN = 1 ];then
         fi
 fi
 # Password Verification
-if [ $ADMIN_PASSWORD = adminUser ];then
+if [ "$ADMIN_PASSWORD" = "adminUser" ];then
         displayerror "You don't have change admin password."
         displaymessage "Choose new admin password"
         read ADMIN_PASSWORD
@@ -118,7 +118,7 @@ fi
 export ADMIN_PASSWORD_CRYPT=$(docker run --rm httpd:2.4-alpine htpasswd -nbB admin $ADMIN_PASSWORD | cut -d ":" -f 2 )
 export ADMIN_PASSWORD_CRYPT_SHA256=$(echo $ADMIN_PASSWORD | sha256sum | cut -d" " -f1)
 
-if [ $HTACCESS_PASSWORD = adminHtaccess ];then
+if [ "$HTACCESS_PASSWORD" = "adminHtaccess" ];then
         displayerror "You don't have change HTACCESS password."
         displaymessage "Choose new HTACCESS password"
         read HTACCESS_PASSWORD
@@ -128,7 +128,7 @@ fi
         export HTACCESS_PASSWORD_CRYPT=$(docker run --rm httpd:2.4-alpine htpasswd -nbB admin $HTACCESS_PASSWORD | cut -d ":" -f 2 )
 
 
-if [ $CLUSTER_DOMAIN = mycluster.org ];then
+if [ "$CLUSTER_DOMAIN" = "mycluster.org" ];then
         displayerror "You don't have change your domain name."
         displaymessage "Choose new domaine name (without www.)"
         read CLUSTER_DOMAIN
