@@ -11,7 +11,7 @@ services:
       driver: "gelf"
       options:
         gelf-address: "udp://graylog.${CLUSTER_DOMAIN}:12201"
-        tag: "traefik-docker-swarm-cluster"
+        tag: "log_mongo-docker-swarm-cluster"
     deploy:
       replicas: 1
       placement:
@@ -38,7 +38,7 @@ services:
       driver: "gelf"
       options:
         gelf-address: "udp://graylog.${CLUSTER_DOMAIN}:12201"
-        tag: "traefik-docker-swarm-cluster"
+        tag: "log_elasticsearch-docker-swarm-cluster"
 
   graylog:
     image: graylog/graylog:3.1
@@ -55,7 +55,7 @@ services:
       - elasticsearch
     ports:
       # Graylog web interface and REST API
-      - 9000:9000
+      - 9000
       # Syslog TCP
       - 1514:1514
       # Syslog UDP
@@ -76,6 +76,11 @@ services:
     networks:
       - admin-net
       - traefik-net
+    logging:
+      driver: "gelf"
+      options:
+        gelf-address: "udp://graylog.${CLUSTER_DOMAIN}:12201"
+        tag: "log_graylog-docker-swarm-cluster"
 
 
 # Volumes for persisting data, see https://docs.docker.com/engine/admin/volumes/volumes/
@@ -91,5 +96,6 @@ networks:
   admin-net:
     driver: overlay
     attachable: true
+    external: true
   traefik-net:
     external: true

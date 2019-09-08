@@ -15,4 +15,9 @@ services:
           memory: 1024M
         reservations:
           memory: 128M
+    logging:
+      driver: "gelf"
+      options:
+        gelf-address: "udp://graylog.${CLUSTER_DOMAIN}:12201"
+        tag: "ceph-docker-plugin-docker-swarm-cluster"
 

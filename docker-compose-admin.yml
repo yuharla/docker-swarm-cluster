@@ -26,6 +26,11 @@ services:
           memory: 64M
     networks:
       - traefik-net
+    logging:
+      driver: "gelf"
+      options:
+        gelf-address: "udp://graylog.${CLUSTER_DOMAIN}:12201"
+        tag: "dashboard-docker-swarm-cluster"
 
   portainer:
     image: portainer/portainer:1.22.0
@@ -51,6 +56,11 @@ services:
     networks:
       - traefik-net
       - admin-net
+    logging:
+      driver: "gelf"
+      options:
+        gelf-address: "udp://graylog.${CLUSTER_DOMAIN}:12201"
+        tag: "portainer-docker-swarm-cluster"
 
   agent:
     image: portainer/agent:latest
@@ -70,6 +80,11 @@ services:
       mode: global
       placement:
         constraints: [node.platform.os == linux]
+    logging:
+      driver: "gelf"
+      options:
+        gelf-address: "udp://graylog.${CLUSTER_DOMAIN}:12201"
+        tag: "agent-docker-swarm-cluster"
 
   feeds:
     image: flaviostutz/docker-swarm-feeds:1.1.0
@@ -97,6 +112,11 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - $DIR_PERSISTANT_FOLDER/portainer:/data
+    logging:
+      driver: "gelf"
+      options:
+        gelf-address: "udp://graylog.${CLUSTER_DOMAIN}:12201"
+        tag: "feed-docker-swarm-cluster"
 
   janitor:
     image: flaviostutz/docker-janitor:latest
@@ -112,6 +132,11 @@ services:
       - UNUSED_TIME=24h
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+    logging:
+      driver: "gelf"
+      options:
+        gelf-address: "udp://graylog.${CLUSTER_DOMAIN}:12201"
+        tag: "janitor-docker-swarm-cluster"
 
 networks:
   admin-net:
