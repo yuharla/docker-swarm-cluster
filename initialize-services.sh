@@ -166,12 +166,14 @@ displayandexec "Create netwok Docker for Traefik" &docker network create traefik
 displayandexec "Create network Docker for Metrics" &docker network create metrics-net --scope swarm -d overlay --opt encrypted=true
 displayandexec "Create network Docker for Admin" &docker network create admin-net --scope swarm -d overlay --opt encrypted=true
 
+
 displaytitle "Create docker"
 
+sleep2
 displayandexec "CREATING INGRESS SERVICES STACK..." &docker stack deploy --compose-file docker-compose-ingress.yml ingress
 
 displayandexec "CREATING LOGS SERVICES STACK..." &docker stack deploy --compose-file docker-compose-log.yml logs
-
+sleep 5
 displayandexec "CREATING ADMINISTRATION SERVICES STACK..." &docker stack deploy --compose-file docker-compose-admin.yml admin
 
 displayandexec "CREATING METRICS SERVICES STACK..." &docker stack deploy --compose-file docker-compose-metrics.yml metrics

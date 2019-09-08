@@ -46,9 +46,9 @@ services:
       - graylog_journal:/usr/share/graylog/data/journal
     environment:
       # CHANGE ME (must be at least 16 characters)!
-      - GRAYLOG_PASSWORD_SECRET=${RANDOM_SECRET}
+      #- GRAYLOG_PASSWORD_SECRET=${RANDOM_SECRET}
       # Password: admin
-      - GRAYLOG_ROOT_PASSWORD_SHA2=${ADMIN_PASSWORD_CRYPT_SHA256}
+      #- GRAYLOG_ROOT_PASSWORD_SHA2=${ADMIN_PASSWORD_CRYPT_SHA256}
       - GRAYLOG_HTTP_EXTERNAL_URI=https://graylog.${CLUSTER_DOMAIN}/
     depends_on:
       - mongo
