@@ -1,50 +1,98 @@
-version: '3'
+version: '3.5'
+
 services:
-  mongo:
-    image: "mongo:3"
+  mongodb:
+    image: mongo:3
     volumes:
-      - .mongo:/data/db
+      - mongo_data:/data/db
     networks:
       - admin-net
+    logging:
+      driver: "gelf"
+      options:
+        gelf-address: "udp://graylog.${CLUSTER_DOMAIN}:12201"
+        tag: "traefik-docker-swarm-cluster"
     deploy:
       replicas: 1
-      restart_policy:
-        condition: on-failure
+      placement:
+        constraints:
+          - node.role == manager 
+
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch-oss:6.8.2
-    command: "elasticsearch -Des.cluster.name='graylog'"
     volumes:
-      - .elasticsearch:/usr/share/elasticsearch/data
-    networks:
-      - admin-net
+      - es_data:/usr/share/elasticsearch/data
+    environment:
+      - http.host=0.0.0.0
+      - transport.host=localhost
+      - network.host=0.0.0.0
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
     deploy:
       replicas: 1
-      restart_policy:
-        condition: on-failure
+      placement:
+        constraints:
+          - node.role == manager 
+    networks:
+      - admin-net
+    logging:
+      driver: "gelf"
+      options:
+        gelf-address: "udp://graylog.${CLUSTER_DOMAIN}:12201"
+        tag: "traefik-docker-swarm-cluster"
+
   graylog:
     image: graylog/graylog:3.1
     volumes:
-      - .graylog/data/journal:/usr/share/graylog/data/journal
-      - .graylog/config:/usr/share/graylog/data/config
+      - graylog_journal:/usr/share/graylog/data/journal
     environment:
       # CHANGE ME (must be at least 16 characters)!
       - GRAYLOG_PASSWORD_SECRET=${RANDOM_SECRET}
       # Password: admin
       - GRAYLOG_ROOT_PASSWORD_SHA2=${ADMIN_PASSWORD_CRYPT_SHA256}
       - GRAYLOG_HTTP_EXTERNAL_URI=https://graylog.${CLUSTER_DOMAIN}/
+    links:
+      - mongodb:mongo
+      - elasticsearch
     depends_on:
-      - mongo
+      - mongodb
       - elasticsearch
     ports:
-      - "9000:9000"
-      - "12201:12201"
-      - "1514:1514"
-      - "514:514/udp"
+      # Graylog web interface and REST API
+      - 9000:9000
+      # Syslog TCP
+      - 1514:1514
+      # Syslog UDP
+      - 1514:1514/udp
+      # GELF TCP
+      - 12201:12201
+      # GELF UDP
+      - 12201:12201/udp
+    deploy:
+      labels:
+        traefik.frontend.rule: Host:graylog.${CLUSTER_DOMAIN}
+        traefik.port: 9000
+        traefik.docker.network: traefik-net
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
     networks:
       - admin-net
       - traefik-net
-  
-    deploy:
-      replicas: 1
-      restart_policy:
-        condition: on-failure
+
+
+# Volumes for persisting data, see https://docs.docker.com/engine/admin/volumes/volumes/
+volumes:
+  mongo_data:
+    driver: local
+  es_data:
+    driver: local
+  graylog_journal:
+    driver: local
+
+networks:
+  admin-net:
+    driver: overlay
+    attachable: true
+  traefik-net:
+    external: true
