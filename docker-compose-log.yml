@@ -76,11 +76,7 @@ services:
     networks:
       - admin-net
       - traefik-net
-    logging:
-      driver: "gelf"
-      options:
-        gelf-address: "udp://graylog.${CLUSTER_DOMAIN}:12201"
-        tag: "log_graylog-docker-swarm-cluster"
+
 
 
 # Volumes for persisting data, see https://docs.docker.com/engine/admin/volumes/volumes/
@@ -92,10 +88,3 @@ volumes:
   graylog_journal:
     driver: local
 
-networks:
-  admin-net:
-    driver: overlay
-    attachable: true
-    external: true
-  traefik-net:
-    external: true

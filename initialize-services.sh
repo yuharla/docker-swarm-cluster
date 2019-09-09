@@ -169,7 +169,7 @@ displayandexec "Create network Docker for Admin" &docker network create admin-ne
 
 displaytitle "Create docker"
 
-sleep2
+sleep 2
 displayandexec "CREATING INGRESS SERVICES STACK..." &docker stack deploy --compose-file docker-compose-ingress.yml ingress
 
 displayandexec "CREATING LOGS SERVICES STACK..." &docker stack deploy --compose-file docker-compose-log.yml logs

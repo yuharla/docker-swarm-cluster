@@ -138,9 +138,3 @@ services:
         gelf-address: "udp://graylog.${CLUSTER_DOMAIN}:12201"
         tag: "janitor-docker-swarm-cluster"
 
-networks:
-  admin-net:
-    driver: overlay
-    attachable: true
-  traefik-net:
-    external: true

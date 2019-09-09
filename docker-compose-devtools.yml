@@ -56,14 +56,3 @@ services:
       options:
         gelf-address: "udp://graylog.${CLUSTER_DOMAIN}:12201"
         tag: "gitlab-docker-swarm-cluster"
-
-networks:
-  traefik-net:
-    external: true
-
-volumes:
-  gitlab-runner1-etc:
-  gitlab-runner1-home:
-  gitlab_etc:
-  gitlab_opt:
-  gitlab_log:
