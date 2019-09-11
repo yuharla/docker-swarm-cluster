@@ -9,8 +9,8 @@ services:
       - DESCRIPTION=Runner1
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - gitlab-runner1-etc:/etc/gitlab-runner
-      - gitlab-runner1-home:/home/gitlab-runner
+      - $DIR_PERSISTANT_FOLDER/gitlab-runner/etc:/etc/gitlab-runner
+      - $DIR_PERSISTANT_FOLDER/gitlab-runner/home:/home/gitlab-runner
     deploy:
       labels:
         traefik.frontend.rule: Host:gitlab-runner1.${CLUSTER_DOMAIN}
@@ -48,9 +48,9 @@ services:
     networks:
       - traefik-net
     volumes:
-      - gitlab_etc:/etc/gitlab
-      - gitlab_opt:/var/opt/gitlab
-      - gitlab_log:/var/log/gitlab
+      - $DIR_PERSISTANT_FOLDER/gitlab/etc:/etc/gitlab
+      - $DIR_PERSISTANT_FOLDER/gitlab/opt:/var/opt/gitlab
+      - $DIR_PERSISTANT_FOLDER/gitlab/log:/var/log/gitlab
     logging:
       driver: "gelf"
       options:
@@ -61,9 +61,4 @@ networks:
   traefik-net:
     external: true
 
-volumes:
-  gitlab-runner1-etc:
-  gitlab-runner1-home:
-  gitlab_etc:
-  gitlab_opt:
-  gitlab_log:
+

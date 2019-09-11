@@ -78,7 +78,7 @@ services:
       - '--config.file=/etc/alertmanager/alertmanager.yml'
       - '--storage.path=/alertmanager'
     volumes:
-      - alertmanager:/alertmanager
+      - ${DIR_PERSISTANT_FOLDER}/alertmanager:/alertmanager
     networks:
       - metrics-net
       - traefik-net
@@ -131,7 +131,7 @@ services:
     environment:
       - JOBS=traefik:8080
     volumes:
-      - prometheus:/prometheus
+      - ${DIR_PERSISTANT_FOLDER}/prometheus:/prometheus
     configs:
       - source: node_rules
         target: /etc/prometheus/swarm_node.rules.yml
@@ -168,7 +168,7 @@ services:
       - GF_SECURITY_ADMIN_PASSWORD=${ADMIN_PASSWORD:-admin}
       - GF_USERS_ALLOW_SIGN_UP=false
     volumes:
-      - grafana:/var/lib/grafana
+      - ${DIR_PERSISTANT_FOLDER}/grafana:/var/lib/grafana
     networks:
       - metrics-net
       - traefik-net
@@ -205,9 +205,4 @@ configs:
     file: ./prometheus/node.rules.yml
   task_rules:
     file: ./prometheus/task.rules.yml
-
-volumes:
-  prometheus:
-  grafana:
-  alertmanager:
 

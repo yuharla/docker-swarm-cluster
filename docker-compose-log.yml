@@ -4,7 +4,7 @@ services:
   mongo:
     image: mongo:3
     volumes:
-      - mongo_data:/data/db
+      - ${DIR_PERSISTANT_FOLDER}/mongo:/data/db
     networks:
       - admin-net
     logging:
@@ -21,7 +21,7 @@ services:
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch-oss:6.8.2
     volumes:
-      - es_data:/usr/share/elasticsearch/data
+      - ${DIR_PERSISTANT_FOLDER}/elasticsearch:/usr/share/elasticsearch/data
     environment:
       - http.host=0.0.0.0
       - transport.host=localhost
@@ -43,12 +43,12 @@ services:
   graylog:
     image: graylog/graylog:3.1
     volumes:
-      - graylog_journal:/usr/share/graylog/data/journal
+      - ${DIR_PERSISTANT_FOLDER}/graylog:/usr/share/graylog/data/journal
     environment:
       # CHANGE ME (must be at least 16 characters)!
-      #- GRAYLOG_PASSWORD_SECRET=${RANDOM_SECRET}
+      - GRAYLOG_PASSWORD_SECRET=${RANDOM_SECRET}
       # Password: admin
-      #- GRAYLOG_ROOT_PASSWORD_SHA2=${ADMIN_PASSWORD_CRYPT_SHA256}
+      - GRAYLOG_ROOT_PASSWORD_SHA2=${ADMIN_PASSWORD_CRYPT_SHA256}
       - GRAYLOG_HTTP_EXTERNAL_URI=https://graylog.${CLUSTER_DOMAIN}/
     depends_on:
       - mongo
@@ -82,15 +82,6 @@ services:
         gelf-address: "udp://graylog.${CLUSTER_DOMAIN}:12201"
         tag: "log_graylog-docker-swarm-cluster"
 
-
-# Volumes for persisting data, see https://docs.docker.com/engine/admin/volumes/volumes/
-volumes:
-  mongo_data:
-    driver: local
-  es_data:
-    driver: local
-  graylog_journal:
-    driver: local
 
 networks:
   admin-net:
