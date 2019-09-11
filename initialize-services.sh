@@ -158,6 +158,14 @@ displayandexec "Copy configuration file traefik.toml" &cp -f ./traefik/traefik.t
 displayandexec "Change value in Traefik" &sed -i "s#CLUSTER_DOMAIN#$CLUSTER_DOMAIN#" $DIR_PERSISTANT_FOLDER/traefik/traefik.toml && sed -i "s#ADMIN_EMAIL#$ADMIN_EMAIL#" $DIR_PERSISTANT_FOLDER/traefik/traefik.toml
 displayandexec "Create ACME file" &touch  $DIR_PERSISTANT_FOLDER/traefik/acme.json && chmod 600 $DIR_PERSISTANT_FOLDER/traefik/acme.json
 displayandexec "Create persist Portainer folder"  &mkdir -p $DIR_PERSISTANT_FOLDER/portainer
+displayandexec "Create persist alertmanager folder"  &mkdir -p $DIR_PERSISTANT_FOLDER/alertmanager
+displayandexec "Create persist grafana folder"  &mkdir -p $DIR_PERSISTANT_FOLDER/grafana
+displayandexec "Create persist elasticsearch folder"  &mkdir -p $DIR_PERSISTANT_FOLDER/elasticsearch
+displayandexec "Create persist mongo folder"  &mkdir -p $DIR_PERSISTANT_FOLDER/mongo
+displayandexec "Create persist graylog folder"  &mkdir -p $DIR_PERSISTANT_FOLDER/graylog
+displayandexec "Create persist gitlab-runner folder"  &mkdir -p $DIR_PERSISTANT_FOLDER/gitlab-runner/{etc,home}
+displayandexec "Create persist gitlab folder"  &mkdir -p $DIR_PERSISTANT_FOLDER/gitlab/{etc,opt,log}
+
 
 
 displaytitle 'Create docker network'
@@ -169,7 +177,7 @@ displayandexec "Create network Docker for Admin" &docker network create admin-ne
 
 displaytitle "Create docker"
 
-sleep2
+sleep 2
 displayandexec "CREATING INGRESS SERVICES STACK..." &docker stack deploy --compose-file docker-compose-ingress.yml ingress
 
 displayandexec "CREATING LOGS SERVICES STACK..." &docker stack deploy --compose-file docker-compose-log.yml logs
