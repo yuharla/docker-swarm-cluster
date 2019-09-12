@@ -148,6 +148,9 @@ if [ ! -d $DIR_PERSISTANT_FOLDER ];then
 displayandexec "Create permanent directory" &mkdir -p $DIR_PERSISTANT_FOLDER
 fi
 
+# find docker gateway to environment variable dockerd-exporter
+export DOCKER_GWBRIDGE_IP=$(docker run --rm --net host alpine ip -o addr show docker_gwbridge | grep 'inet ' | cut -d " " -f 7 | cut -d"/" -f 1)
+
 
 
 # preparation and verification of the environment
