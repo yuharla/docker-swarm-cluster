@@ -46,11 +46,11 @@ RUN docker-php-ext-install -j$(nproc) opcache pdo_mysql mbstring soap && \
     docker-php-ext-enable sqlsrv pdo_sqlsrv xdebug
 
 # PHP Configuration 
-RUN sed -i "s/short_open_tag = On/short_open_tag = Off/" /etc/php/7.3/apache2/php.ini && \
-    sed -i "s/error_reporting = E_ALL & ~E_DEPRECATED/error_reporting = E_ALL/" /etc/php/7.3/apache2/php.ini && \
-    sed -i "s/upload_max_filesize = 2M/upload_max_filesize = 12M/" /etc/php/7.3/apache2/php.ini && \
-    sed -i "s/expose_php = On/expose_php = Off/" /etc/php/7.3/apache2/php.ini && \
-    sed -i "s#;date.timezone =#date.timezone = Europe/Paris#" /etc/php/7.3/apache2/php.ini
+RUN sed -i "s/short_open_tag = On/short_open_tag = Off/" /usr/local/etc/php/php.ini-production && \
+    sed -i "s/error_reporting = E_ALL & ~E_DEPRECATED/error_reporting = E_ALL/" /usr/local/etc/php/php.ini-production && \
+    sed -i "s/upload_max_filesize = 2M/upload_max_filesize = 12M/" /usr/local/etc/php/php.ini-production && \
+    sed -i "s/expose_php = On/expose_php = Off/" /usr/local/etc/php/php.ini-production && \
+    sed -i "s#;date.timezone =#date.timezone = Europe/Paris#" /usr/local/etc/php/php.ini-production
 
 # APACHE CONFIGURATION
 RUN cd /etc/apache2/mods-available && \
