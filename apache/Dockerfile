@@ -31,8 +31,7 @@ RUN apt-get update -qy && \
     echo 'export PATH="$PATH:/opt/mssql-tools/bin"' >> ~/.bash_profile && \
     echo 'export PATH="$PATH:/opt/mssql-tools/bin"' >> ~/.bashrc && \
     source ~/.bashrc && \
-    apt-get install unixodbc-dev && \
-   
+    apt-get install unixodbc-dev && \   
     apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # PHP Extensions
@@ -56,7 +55,7 @@ RUN cd /etc/apache2/mods-available && \
     a2enmod http2 && \
     sed -i "s/ServerTokens OS/ServerTokens Prod/" /etc/apache2/conf-available/security.conf && \
     sed -i "s/ServerSignature On/ServerSignature Off/" /etc/apache2/conf-available/security.conf && \
-    echo "Options -Indexes" >> /etc/apache2/conf-available/security.conf && \
+    echo "Options -Indexes" >> /etc/apache2/conf-available/security.conf
 
 # Folder Configuration
 RUN rm -Rf /var/www/html &&\
