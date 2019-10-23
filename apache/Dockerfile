@@ -9,6 +9,7 @@ WORKDIR /data
 RUN apt-get update -qy && \
     apt-get install -y \
     locale \
+    cronolog \
     apt-transport-https \
     libxml2-dev \
     curl \
@@ -56,7 +57,15 @@ RUN cd /etc/apache2/mods-available && \
     sed -i "s/ServerTokens OS/ServerTokens Prod/" /etc/apache2/conf-available/security.conf && \
     sed -i "s/ServerSignature On/ServerSignature Off/" /etc/apache2/conf-available/security.conf && \
     echo "Options -Indexes" >> /etc/apache2/conf-available/security.conf && \
-    
+
+# Folder Configuration
+RUN rm -Rf /var/www/html &&\
+    cd /var/www && \
+    mkdir {webroot,log,tmp} && \
+    chown -R www-data:www-data webroot && \
+    chown -R www-data:www-data tmp && chmod 777 tmp
+
+
 
 
 
