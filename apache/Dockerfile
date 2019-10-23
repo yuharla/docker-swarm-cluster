@@ -27,8 +27,6 @@ RUN rm -f /etc/apt/preferences.d/no-debian-php && \
     php7.3-curl \
     php7.3-intl \
     php-imagick \
-    libmcrypt-dev \
-    php7.3-mcrypt \
     php-apcu \
     vim \
     && \
@@ -53,8 +51,7 @@ RUN sed -i "s/short_open_tag = On/short_open_tag = Off/" /usr/local/etc/php/php.
     sed -i "s/upload_max_filesize = 2M/upload_max_filesize = 12M/" /usr/local/etc/php/php.ini-production && \
     sed -i "s/expose_php = On/expose_php = Off/" /usr/local/etc/php/php.ini-production && \
     sed -i "s#;date.timezone =#date.timezone = Europe/Paris#" /usr/local/etc/php/php.ini-production && \
-    echo "extension=redis.so" > usr/local/etc/php/conf.d/redis.ini && \
-    echo "extension=mcrypt.so" > usr/local/etc/php/conf.d/mcrypt.ini && \
+    echo "extension=redis.so" > usr/local/etc/php/conf.d/redis.ini
 
 # APACHE CONFIGURATION
 RUN cd /etc/apache2/mods-available && \
