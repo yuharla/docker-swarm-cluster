@@ -1,22 +1,62 @@
 FROM php:7.3.10-apache-buster
 
 ENV COMPOSER_ALLOW_SUPERUSER=1
+ENV ACCEPT_EULA=Y
 
 EXPOSE 80
 WORKDIR /data
 
 RUN apt-get update -qy && \
     apt-get install -y \
+    locale \
+    apt-transport-https \
+    libxml2-dev \
+    curl \
     git \
     libicu-dev \
     unzip \
     zip \
     php-redis \
+    php7.3-dev \
+    php7.3-xml \
+    php-apcu \
     vim \
     && \
     curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer && \
+    curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add - && \
+    curl https://packages.microsoft.com/config/debian/10/prod.list > /etc/apt/sources.list.d/mssql-release.list && \
+    apt-get update && \
+    ACCEPT_EULA=Y apt-get install msodbcsql17 mssql-tools && \
+    echo 'export PATH="$PATH:/opt/mssql-tools/bin"' >> ~/.bash_profile && \
+    echo 'export PATH="$PATH:/opt/mssql-tools/bin"' >> ~/.bashrc && \
+    source ~/.bashrc && \
+    apt-get install unixodbc-dev && \
+   
     apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # PHP Extensions
-RUN docker-php-ext-install -j$(nproc) opcache pdo_mysql pdo_odbc
-ADD conf/php.ini /usr/local/etc/php/conf.d/app.ini
+RUN docker-php-ext-install -j$(nproc) opcache pdo_mysql pdo_odbc curl intl mbstring soap && \
+    pecl install sqlsrv pdo_sqlsrv xdebug && \
+    docker-php-ext-enable sqlsrv pdo_sqlsrv xdebug
+
+# PHP Configuration 
+RUN sed -i "s/short_open_tag = On/short_open_tag = Off/" /etc/php/7.3/apache2/php.ini && \
+    sed -i "s/error_reporting = E_ALL & ~E_DEPRECATED/error_reporting = E_ALL/" /etc/php/7.3/apache2/php.ini && \
+    sed -i "s/upload_max_filesize = 2M/upload_max_filesize = 12M/" /etc/php/7.3/apache2/php.ini && \
+    sed -i "s/expose_php = On/expose_php = Off/" /etc/php/7.3/apache2/php.ini && \
+    sed -i "s#;date.timezone =#date.timezone = Europe/Paris#" /etc/php/7.3/apache2/php.ini
+
+# APACHE CONFIGURATION
+RUN cd /etc/apache2/mods-available && \
+    a2enmod rewrite && \
+    a2enmod headers && \
+    a2enmod deflate && \
+    a2enmod expires && \
+    a2enmod http2 && \
+    sed -i "s/ServerTokens OS/ServerTokens Prod/" /etc/apache2/conf-available/security.conf && \
+    sed -i "s/ServerSignature On/ServerSignature Off/" /etc/apache2/conf-available/security.conf && \
+    echo "Options -Indexes" >> /etc/apache2/conf-available/security.conf && \
+    
+
+
+
