@@ -9,7 +9,7 @@ RUN rm -f /etc/apt/preferences.d/no-debian-php && \
     apt-get update -qy && \
     apt upgrade -y && \
     apt -y autoremove && \
-    apt-get install -y \
+    apt-get install -y -q \
     apt-utils \
     locales \
     gnupg2 \
