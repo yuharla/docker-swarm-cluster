@@ -24,6 +24,9 @@ RUN rm -f /etc/apt/preferences.d/no-debian-php && \
     php-redis \
     php7.3-dev \
     php7.3-xml \
+    php7.3-curl \
+    php7.3-intl \
+    php-imagick \
     php-apcu \
     vim \
     && \
@@ -38,7 +41,7 @@ RUN rm -f /etc/apt/preferences.d/no-debian-php && \
     apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # PHP Extensions
-RUN docker-php-ext-install -j$(nproc) opcache pdo_mysql curl intl mbstring soap && \
+RUN docker-php-ext-install -j$(nproc) opcache pdo_mysql mbstring soap && \
     pecl install sqlsrv pdo_sqlsrv xdebug && \
     docker-php-ext-enable sqlsrv pdo_sqlsrv xdebug
 
