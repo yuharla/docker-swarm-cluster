@@ -73,7 +73,7 @@ RUN rm -Rf /var/www/html &&\
     chown -R www-data:www-data tmp && chmod 777 tmp
     
 
-ADD conf/000-default.conf /etc/apache2/site-available/000-default.conf
+ADD conf/000-default.conf /etc/apache2/sites-available/000-default.conf
 
 RUN service apache2 restart
 
