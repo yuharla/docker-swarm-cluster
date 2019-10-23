@@ -6,9 +6,12 @@ ENV ACCEPT_EULA=Y
 EXPOSE 80
 WORKDIR /data
 
-RUN apt-get update -qy && \
+RUN rm -f /etc/apt/preferences.d/no-debian-php && \
+    apt-get update -qy && \
+    apt upgrade -y && \
+    apt -y autoremove && \
     apt-get install -y \
-    locale \
+    locales \
     cronolog \
     apt-transport-https \
     libxml2-dev \
