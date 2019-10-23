@@ -43,7 +43,7 @@ RUN rm -f /etc/apt/preferences.d/no-debian-php && \
 # PHP Extensions
 RUN docker-php-ext-install -j$(nproc) opcache pdo_mysql mbstring soap mcrypt && \
     pecl install sqlsrv pdo_sqlsrv xdebug && \
-    docker-php-ext-enable sqlsrv pdo_sqlsrv xdebug redis
+    docker-php-ext-enable sqlsrv pdo_sqlsrv xdebug redis intl imagick apcu
 
 # PHP Configuration 
 RUN sed -i "s/short_open_tag = On/short_open_tag = Off/" /usr/local/etc/php/php.ini-production && \
