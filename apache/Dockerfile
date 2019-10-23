@@ -26,6 +26,7 @@ RUN rm -f /etc/apt/preferences.d/no-debian-php && \
     php7.3-xml \
     php7.3-curl \
     php7.3-intl \
+    php7.3-zip \
     php-imagick \
     php-apcu \
     vim \
