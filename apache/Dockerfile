@@ -67,6 +67,7 @@ RUN cd /etc/apache2/mods-available && \
 RUN rm -Rf /var/www/html &&\
     cd /var/www && \
     mkdir -p {webroot,log,tmp} && \
+    ls -la && \
     chown -R www-data:www-data webroot && \
     chown -R www-data:www-data tmp && chmod 777 tmp
     
