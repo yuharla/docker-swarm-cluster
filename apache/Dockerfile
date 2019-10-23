@@ -48,13 +48,15 @@ RUN docker-php-ext-install -j$(nproc) opcache pdo_mysql mbstring soap && \
     docker-php-ext-enable sqlsrv pdo_sqlsrv xdebug
 
 # PHP Configuration 
-RUN sed -i "s/short_open_tag = On/short_open_tag = Off/" /usr/local/etc/php/php.ini-production && \
+RUN rm -f /usr/local/etc/php/php.ini-development && \
+    sed -i "s/short_open_tag = On/short_open_tag = Off/" /usr/local/etc/php/php.ini-production && \
     sed -i "s/error_reporting = E_ALL & ~E_DEPRECATED/error_reporting = E_ALL/" /usr/local/etc/php/php.ini-production && \
     sed -i "s/upload_max_filesize = 2M/upload_max_filesize = 12M/" /usr/local/etc/php/php.ini-production && \
     sed -i "s/expose_php = On/expose_php = Off/" /usr/local/etc/php/php.ini-production && \
     sed -i "s#;date.timezone =#date.timezone = Europe/Paris#" /usr/local/etc/php/php.ini-production && \
-    echo "extension=redis.so" >> /usr/local/etc/php/php.ini-production && \
-    echo "extension=intl.so" >> /usr/local/etc/php/php.ini-production
+    echo "extension=redis.so" >> /usr/local/etc/php/conf.d/redis.ini && \
+    echo "extension=intl.so" >> /usr/local/etc/php/conf.d/intl.ini && \
+    echo "extension=zip.so" >> /usr/local/etc/php/conf.d/zip.ini 
 
 # APACHE CONFIGURATION
 RUN cd /etc/apache2/mods-available && \
