@@ -4,13 +4,13 @@ ENV COMPOSER_ALLOW_SUPERUSER=1
 ENV ACCEPT_EULA=Y
 
 EXPOSE 80
-WORKDIR /data
 
 RUN rm -f /etc/apt/preferences.d/no-debian-php && \
     apt-get update -qy && \
     apt upgrade -y && \
     apt -y autoremove && \
     apt-get install -y \
+    apt-utils \
     locales \
     gnupg2 \
     cronolog \
