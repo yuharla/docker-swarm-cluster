@@ -12,6 +12,7 @@ RUN rm -f /etc/apt/preferences.d/no-debian-php && \
     apt -y autoremove && \
     apt-get install -y \
     locales \
+    gnupg2 \
     cronolog \
     apt-transport-https \
     libxml2-dev \
