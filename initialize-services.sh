@@ -189,6 +189,8 @@ displayandexec "CREATING ADMINISTRATION SERVICES STACK..." &docker stack deploy 
 
 displayandexec "CREATING METRICS SERVICES STACK..." &docker stack deploy --compose-file docker-compose-metrics.yml metrics
 
+displayandexec "CREATING WEB SERVICES STACK..." &docker stack deploy --compose-file docker-compose-web-site.yml $WEB
+
 displaytitle 'Check all sub domain name to manage your docker swarm'
 
 displaymessage "Check Graylog managment URL"

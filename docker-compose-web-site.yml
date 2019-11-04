@@ -1,4 +1,307 @@
 version: '3.5'
 
   services:
+    elastic-master:
+    image: elasticsearch:7.4.0
+    environment:
+      discovery.zen.minimum_master_nodes: 2
+      discovery.zen.ping.unicast.hosts: elastic-master
+      discovery.zen.ping_timeout: 5s
+      discovery.zen.commit_timeout: 5s
+      node.master: "true"
+      node.data: "false"
+      node.ingest: "false"
+      cluster.remote.connect: "false"
+      cluster.name: docker-swarm-cluster
+      network.host: 0.0.0.0
+      ES_JAVA_OPTS: -Xms1g -Xmx1g
+    networks:
+      - net-elk
+      - net-web
+    deploy:
+      endpoint_mode: dnsrr
+      mode: 'replicated'
+      replicas: 3
+      update_config:
+        parallelism: 1
+        delay: 10s
+      placement:
+        constraints: [node.labels.elk == master]
+      resources:
+        limits:
+          memory: 4G
+        reservations:
+          memory: 2G
+ 
+  elastic-data-1:
+    image: elasticsearch:7.4.0
+    environment:
+      discovery.zen.minimum_master_nodes: 2
+      discovery.zen.ping.unicast.hosts: elastic-master
+      discovery.zen.ping_timeout: 5s
+      discovery.zen.commit_timeout: 5s
+      node.master: "false"
+      node.data: "true"
+      node.ingest: "false"
+      cluster.remote.connect: "false"
+      cluster.name: docker-swarm-cluster
+      network.host: 0.0.0.0
+      ES_JAVA_OPTS: -Xms1g -Xmx1g
+    networks:
+      - net-elk
+    volumes:
+      - esdata1:/usr/share/elasticsearch/data
+    deploy:
+      placement:
+       constraints: [node.hostname == swarm1]
+      mode: 'replicated'
+      replicas: 1
+      resources:
+        limits:
+          memory: 4G
+        reservations:
+          memory: 2G
+ 
+  elastic-data-2:
+    image: elasticsearch:7.4.0
+    environment:
+      discovery.zen.minimum_master_nodes: 2
+      discovery.zen.ping.unicast.hosts: elastic-master
+      discovery.zen.ping_timeout: 5s
+      discovery.zen.commit_timeout: 5s
+      node.master: "false"
+      node.data: "true"
+      node.ingest: "false"
+      cluster.remote.connect: "false"
+      cluster.name: docker-swarm-cluster
+      network.host: 0.0.0.0
+      ES_JAVA_OPTS: -Xms1g -Xmx1g
+    networks:
+      - net-elk
+    volumes:
+      - esdata2:/usr/share/elasticsearch/data
+    deploy:
+      placement:
+        constraints: [node.hostname ==swarm2]
+      mode: 'replicated'
+      replicas: 1
+      resources:
+        limits:
+          memory: 4G
+        reservations:
+          memory: 2G
+ 
+  elastic-data-3:
+    image: elasticsearch:7.4.0
+    environment:
+      discovery.zen.minimum_master_nodes: 2
+      discovery.zen.ping.unicast.hosts: elastic-master
+      discovery.zen.ping_timeout: 5s
+      discovery.zen.commit_timeout: 5s
+      node.master: "false"
+      node.data: "true"
+      node.ingest: "false"
+      cluster.remote.connect: "false"
+      cluster.name: docker-swarm-cluster
+      network.host: 0.0.0.0
+      ES_JAVA_OPTS: -Xms1g -Xmx1g
+    networks:
+      - net-elk
+    volumes:
+      - esdata3:/usr/share/elasticsearch/data
+    deploy:
+      placement:
+        constraints: [node.hostname ==swarm3]
+      mode: 'replicated'
+      replicas: 1
+      resources:
+        limits:
+          memory: 4G
+        reservations:
+          memory: 2G
+ 
+  elastic-data-4:
+    image: elasticsearch:7.4.0
+    environment:
+      discovery.zen.minimum_master_nodes: 2
+      discovery.zen.ping.unicast.hosts: elastic-master
+      discovery.zen.ping_timeout: 5s
+      discovery.zen.commit_timeout: 5s
+      node.master: "false"
+      node.data: "true"
+      node.ingest: "false"
+      cluster.remote.connect: "false"
+      cluster.name: docker-swarm-cluster
+      network.host: 0.0.0.0
+      ES_JAVA_OPTS: -Xms1g -Xmx1g
+    networks:
+       - net-elk
+    volumes:
+      - esdata4:/usr/share/elasticsearch/data
+    deploy:
+      placement:
+        constraints: [node.hostname ==swarm4]
+      endpoint_mode: dnsrr
+      mode: 'replicated'
+      replicas: 1
+      resources:
+        limits:
+          memory: 4G
+        reservations:
+          memory: 2G
+ 
+  elastic-data-5:
+    image: elasticsearch:7.4.0
+    environment:
+      discovery.zen.minimum_master_nodes: 2
+      discovery.zen.ping.unicast.hosts: elastic-master
+      discovery.zen.ping_timeout: 5s
+      discovery.zen.commit_timeout: 5s
+      node.master: "false"
+      node.data: "true"
+      node.ingest: "false"
+      cluster.remote.connect: "false"
+      cluster.name: docker-swarm-cluster
+      network.host: 0.0.0.0
+      ES_JAVA_OPTS: -Xms1g -Xmx1g
+    networks:
+       - net-elk
+    volumes:
+      - esdata5:/usr/share/elasticsearch/data
+    deploy:
+      placement:
+        constraints: [node.hostname ==swarm5]
+      endpoint_mode: dnsrr
+      mode: 'replicated'
+      replicas: 1
+      resources:
+        limits:
+          memory: 4G
+        reservations:
+          memory: 2G
+ 
+  elastic-coordination:
+    image: elasticsearch:7.4.0
+    environment:
+      discovery.zen.minimum_master_nodes: 2
+      discovery.zen.ping.unicast.hosts: elastic-master
+      discovery.zen.ping_timeout: 5s
+      discovery.zen.commit_timeout: 5s
+      node.master: "false"
+      node.data: "false"
+      node.ingest: "true"
+      cluster.remote.connect: "false"
+      cluster.name: docker-swarm-cluster
+      network.host: 0.0.0.0
+      ES_JAVA_OPTS: -Xms1g -Xmx1g
+    networks:
+      - net-elk
+    deploy:
+      endpoint_mode: dnsrr
+      mode: 'global'
+      update_config:
+        parallelism: 2
+        delay: 10s
+      resources:
+        limits:
+          memory: 4G
+        reservations:
+          memory: 2G
+ 
+  kibana:
+    image: elasticsearch:7.4.0
+    environment:
+      ELASTICSEARCH_HOSTS: http://elastic-coordination:9200
+    networks:
+      - net-elk
+    deploy:
+      labels:
+        - "traefik.enable=true"
+        - "traefik.port=5601"
+        - "traefik.backend=kibana"
+        - "traefik.frontend.rule=Host:kibana.sampsistemi.org"
+        - "traefik.docker.network: traefik-net"
+      mode: replicated
+      replicas: 2
+      update_config:
+        parallelism: 1
+        delay: 10s
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 256M
+ 
+  logstash-syslog:
+    image: registry.gitlab.com/net-security/elk/logstash-syslog:latest
+    ports:
+      - "5000:5000/udp"
+    networks:
+      - net-elk
+    deploy:
+      mode: global
+      update_config:
+        parallelism: 2
+        delay: 10s
+      resources:
+        limits:
+          memory: 4G
+        reservations:
+          memory: 2G
+  
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    restart: always
+    networks:
+      - net-redis
+    logging:
+      driver: "gelf"
+      options:
+        gelf-address: "udp://graylog.${CLUSTER_DOMAIN}:12201"
+        tag: "traefik-docker-swarm-cluster"
+  
+  apachephp:
+    image: yuharla/apacheserver-swarm:php7.3
+    depends_on:
+      - redis
+      - net-web
+      - elastic-master
+    volumes:
+      - ${DIR_PERSISTANT_FOLDER}/${WEB}:/var/www/webroot
+    deploy:
+      labels:
+        traefik.frontend.rule: Host:${WEB}
+        traefik.port: 80
+        traefik.docker.network: traefik-net
+      replicas: 3
+    networks:
+      - net-web
+      - traefik-net
+    logging:
+      driver: "gelf"
+      options:
+        gelf-address: "udp://graylog.${CLUSTER_DOMAIN}:12201"
+        tag: "log_apache-docker-swarm-cluster"
+
+  
+ 
+ 
+################################################################################
+################################# CONFIGURATION ################################
+################################################################################
+networks:
+  net-elk:
+    driver: overlay
+  net-web:
+    driver: overlay
+  
+ 
+volumes:
+    esdata1:
+    esdata2:
+    esdata3:
+    esdata4:
+    esdata5:
   
