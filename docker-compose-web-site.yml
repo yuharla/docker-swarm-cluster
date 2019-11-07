@@ -262,12 +262,81 @@ version: '3.5'
         gelf-address: "udp://graylog.${CLUSTER_DOMAIN}:12201"
         tag: "traefik-docker-swarm-cluster"
   
+ 
+  
+  node-mysql-1:
+    image: yuharla/cluster-mysql-node1:mysql8
+    restart: always
+    networks:
+      - net-mysql
+    logging:
+      driver: "gelf"
+      options:
+        gelf-address: "udp://graylog.${CLUSTER_DOMAIN}:12201"
+        tag: "mysql-node1"
+    volumes:
+      - ${DIR_PERSISTANT_FOLDER}/${BDD}/node1:/var/lib/mysql
+  
+  node-mysql-2:
+    image: yuharla/cluster-mysql-node2:mysql8
+    restart: always
+    networks:
+      - net-mysql
+    logging:
+      driver: "gelf"
+      options:
+        gelf-address: "udp://graylog.${CLUSTER_DOMAIN}:12201"
+        tag: "mysql-node1"
+    volumes:
+      - ${DIR_PERSISTANT_FOLDER}/${BDD}/node2:/var/lib/mysql
+
+  node-mysql-3:
+    image: yuharla/cluster-mysql-node2:mysql8
+    restart: always
+    networks:
+      - net-mysql
+    logging:
+      driver: "gelf"
+      options:
+        gelf-address: "udp://graylog.${CLUSTER_DOMAIN}:12201"
+        tag: "mysql-node1"
+    volumes:
+      - ${DIR_PERSISTANT_FOLDER}/${BDD}/node3:/var/lib/mysql
+
+  node-mysql-4:
+    image: yuharla/cluster-mysql-node2:mysql8
+    restart: always
+    networks:
+      - net-mysql
+    logging:
+      driver: "gelf"
+      options:
+        gelf-address: "udp://graylog.${CLUSTER_DOMAIN}:12201"
+        tag: "mysql-node1"
+    volumes:
+      - ${DIR_PERSISTANT_FOLDER}/${BDD}/node4:/var/lib/mysql
+
+  node-mysql-5:
+    image: yuharla/cluster-mysql-node5:mysql8
+    restart: always
+    networks:
+      - net-mysql
+    logging:
+      driver: "gelf"
+      options:
+        gelf-address: "udp://graylog.${CLUSTER_DOMAIN}:12201"
+        tag: "mysql-node1"
+    volumes:
+      - ${DIR_PERSISTANT_FOLDER}/${BDD}/node5:/var/lib/mysql
+
+
   apachephp:
     image: yuharla/apacheserver-swarm:php7.3
     depends_on:
       - redis
       - net-web
       - elastic-master
+      - node-mysql-1
     volumes:
       - ${DIR_PERSISTANT_FOLDER}/${WEB}:/var/www/webroot
     deploy:
@@ -278,6 +347,9 @@ version: '3.5'
       replicas: 3
     networks:
       - net-web
+      - net-mysql
+      - net-redis
+      - net-elk
       - traefik-net
     logging:
       driver: "gelf"
