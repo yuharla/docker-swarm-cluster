@@ -164,10 +164,10 @@ fi
 displaytitle 'Important'
 displaymessage 'Necessite un conteneur Traefik pour fonctionner'
 displayandexec "Create permanent directory for App" &mkdir -p $DIR_PERSISTANT_FOLDER/$WEB
-displayandexec "Create permanent Sub directory for App" &mkdir -p $DIR_PERSISTANT_FOLDER/$WEB/{webroot,log,tmp,backup,sql,elasticsearch}
+displayandexec "Create permanent Sub directory for App" &mkdir -p $DIR_PERSISTANT_FOLDER/$WEB/{webroot,log,tmp,backup,sql,elasticsearch,conf}
 displayandexec "Create permanent Sub directory for Node Mysql" &mkdir -p $DIR_PERSISTANT_FOLDER/$WEB/sql/{node1,node2,node3,node4,node5}
 displayandexec "Create permanent Sub directory for Node Elasticsearch" &mkdir -p $DIR_PERSISTANT_FOLDER/$WEB/elasticsearch/{esdata1,esdata2,esdata3,esdata4,esdata5}
-
+displayandexec "copy apache configuration" cp apache/conf/000-default.conf $DIR_PERSISTANT_FOLDER/$WEB/conf/000-default.conf
 
 displaytitle 'Create docker network'
 

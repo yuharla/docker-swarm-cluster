@@ -16,8 +16,8 @@ version: '3.5'
       network.host: 0.0.0.0
       ES_JAVA_OPTS: -Xms1g -Xmx1g
     networks:
-      - net-elk-$WEB
-      - net-web-$WEB
+      - net-elk-${WEB}
+      - net-web-${WEB}
     deploy:
       endpoint_mode: dnsrr
       mode: 'replicated'
@@ -48,9 +48,9 @@ version: '3.5'
       network.host: 0.0.0.0
       ES_JAVA_OPTS: -Xms1g -Xmx1g
     networks:
-      - net-elk-$WEB
+      - net-elk-${WEB}
     volumes:
-      - $DIR_PERSISTANT_FOLDER/$WEB/elasticsearch/esdata1:/usr/share/elasticsearch/data
+      -  ${DIR_PERSISTANT_FOLDER}/{$WEB}/elasticsearch/esdata1:/usr/share/elasticsearch/data
     deploy:
       mode: 'replicated'
       replicas: 1
@@ -75,9 +75,9 @@ version: '3.5'
       network.host: 0.0.0.0
       ES_JAVA_OPTS: -Xms1g -Xmx1g
     networks:
-      - net-elk-$WEB
+      - net-elk-${WEB}
     volumes:
-      - $DIR_PERSISTANT_FOLDER/$WEB/elasticsearch/esdata2:/usr/share/elasticsearch/data
+      - ${DIR_PERSISTANT_FOLDER}/{$WEB}/elasticsearch/esdata2:/usr/share/elasticsearch/data
     deploy:
       mode: 'replicated'
       replicas: 1
@@ -102,9 +102,9 @@ version: '3.5'
       network.host: 0.0.0.0
       ES_JAVA_OPTS: -Xms1g -Xmx1g
     networks:
-      - net-elk-$WEB
+      - net-elk-${WEB}
     volumes:
-      - $DIR_PERSISTANT_FOLDER/$WEB/elasticsearch/esdata3:/usr/share/elasticsearch/data
+      -  ${DIR_PERSISTANT_FOLDER}/{$WEB}/elasticsearch/esdata3:/usr/share/elasticsearch/data
     deploy:
       mode: 'replicated'
       replicas: 1
@@ -129,9 +129,9 @@ version: '3.5'
       network.host: 0.0.0.0
       ES_JAVA_OPTS: -Xms1g -Xmx1g
     networks:
-       - net-elk-$WEB
+       - net-elk-${WEB}
     volumes:
-      - $DIR_PERSISTANT_FOLDER/$WEB/elasticsearch/esdata4:/usr/share/elasticsearch/data
+      -  ${DIR_PERSISTANT_FOLDER}/{$WEB}/elasticsearch/esdata4:/usr/share/elasticsearch/data
     deploy:
       placement:
         constraints: [node.hostname ==swarm4]
@@ -159,9 +159,9 @@ version: '3.5'
       network.host: 0.0.0.0
       ES_JAVA_OPTS: -Xms1g -Xmx1g
     networks:
-       - net-elk-$WEB
+       - net-elk-${WEB}
     volumes:
-      - $DIR_PERSISTANT_FOLDER/$WEB/elasticsearch/esdata5:/usr/share/elasticsearch/data
+      -  ${DIR_PERSISTANT_FOLDER}/{$WEB}/elasticsearch/esdata5:/usr/share/elasticsearch/data
     deploy:
       placement:
         constraints: [node.hostname ==swarm5]
@@ -189,7 +189,7 @@ version: '3.5'
       network.host: 0.0.0.0
       ES_JAVA_OPTS: -Xms1g -Xmx1g
     networks:
-      - net-elk-$WEB
+      - net-elk-${WEB}
     deploy:
       endpoint_mode: dnsrr
       mode: 'global'
@@ -207,13 +207,13 @@ version: '3.5'
     environment:
       ELASTICSEARCH_HOSTS: http://elastic-coordination:9200
     networks:
-      - net-elk-$WEB
+      - net-elk-${WEB}
     deploy:
       labels:
         - "traefik.enable=true"
         - "traefik.port=5601"
         - "traefik.backend=kibana"
-        - "traefik.frontend.rule=Host:kibana.sampsistemi.org"
+        - "traefik.frontend.rule=Host:kibana.${CLUSTER_DOMAIN}"
         - "traefik.docker.network: traefik-net"
       mode: replicated
       replicas: 2
@@ -231,7 +231,7 @@ version: '3.5'
     ports:
       - "5000:5000/udp"
     networks:
-      - net-elk-$WEB
+      - net-elk-${WEB}
     deploy:
       mode: global
       update_config:
@@ -249,12 +249,12 @@ version: '3.5'
       - "6379:6379"
     restart: always
     networks:
-      - net-redis-$WEB
+      - net-redis-${WEB}
     logging:
       driver: "gelf"
       options:
         gelf-address: "udp://graylog.${CLUSTER_DOMAIN}:12201"
-        tag: "redis-$WEB"
+        tag: "redis-${WEB}"
   
  
   
@@ -262,12 +262,12 @@ version: '3.5'
     image: yuharla/cluster-mysql-node1:mysql8
     restart: always
     networks:
-      - net-mysql-$WEB
+      - net-mysql-${WEB}
     logging:
       driver: "gelf"
       options:
         gelf-address: "udp://graylog.${CLUSTER_DOMAIN}:12201"
-        tag: "mysql-node1-$WEB"
+        tag: "mysql-node1-${WEB}"
     volumes:
       - ${DIR_PERSISTANT_FOLDER}/${BDD}/node1:/var/lib/mysql
   
@@ -275,12 +275,12 @@ version: '3.5'
     image: yuharla/cluster-mysql-node2:mysql8
     restart: always
     networks:
-      - net-mysql-$WEB
+      - net-mysql-${WEB}
     logging:
       driver: "gelf"
       options:
         gelf-address: "udp://graylog.${CLUSTER_DOMAIN}:12201"
-        tag: "mysql-node2-$WEB"
+        tag: "mysql-node2-${WEB}"
     volumes:
       - ${DIR_PERSISTANT_FOLDER}/${BDD}/node2:/var/lib/mysql
 
@@ -288,12 +288,12 @@ version: '3.5'
     image: yuharla/cluster-mysql-node2:mysql8
     restart: always
     networks:
-      - net-mysql-$WEB
+      - net-mysql-${WEB}
     logging:
       driver: "gelf"
       options:
         gelf-address: "udp://graylog.${CLUSTER_DOMAIN}:12201"
-        tag: "mysql-node3-$WEB"
+        tag: "mysql-node3-${WEB}"
     volumes:
       - ${DIR_PERSISTANT_FOLDER}/${BDD}/node3:/var/lib/mysql
 
@@ -301,12 +301,12 @@ version: '3.5'
     image: yuharla/cluster-mysql-node2:mysql8
     restart: always
     networks:
-      - net-mysql-$WEB
+      - net-mysql-${WEB}
     logging:
       driver: "gelf"
       options:
         gelf-address: "udp://graylog.${CLUSTER_DOMAIN}:12201"
-        tag: "mysql-node4-$WEB"
+        tag: "mysql-node4-${WEB}"
     volumes:
       - ${DIR_PERSISTANT_FOLDER}/${BDD}/node4:/var/lib/mysql
 
@@ -314,12 +314,12 @@ version: '3.5'
     image: yuharla/cluster-mysql-node5:mysql8
     restart: always
     networks:
-      - net-mysql-$WEB
+      - net-mysql-${WEB}
     logging:
       driver: "gelf"
       options:
         gelf-address: "udp://graylog.${CLUSTER_DOMAIN}:12201"
-        tag: "mysql-node5-$WEB"
+        tag: "mysql-node5-${WEB}"
     volumes:
       - ${DIR_PERSISTANT_FOLDER}/${BDD}/node5:/var/lib/mysql
 
@@ -328,11 +328,12 @@ version: '3.5'
     image: yuharla/apacheserver-swarm:php7.3
     depends_on:
       - redis
-      - net-web-$WEB
+      - net-web-${WEB}
       - elastic-master
       - node-mysql-1
     volumes:
       - ${DIR_PERSISTANT_FOLDER}/${WEB}/webroot:/var/www/webroot
+      - ${DIR_PERSISTANT_FOLDER}/${WEB}/conf/000-default.conf:/etc/apache2/sites-available/000-default.conf
     deploy:
       labels:
         traefik.frontend.rule: Host:${WEB}
@@ -340,16 +341,16 @@ version: '3.5'
         traefik.docker.network: traefik-net
       replicas: 3
     networks:
-      - net-web-$WEB
-      - net-mysql-$WEB
-      - net-redis-$WEB
-      - net-elk-$WEB
+      - net-web-${WEB}
+      - net-mysql-${WEB}
+      - net-redis-${WEB}
+      - net-elk-${WEB}
       - traefik-net
     logging:
       driver: "gelf"
       options:
         gelf-address: "udp://graylog.${CLUSTER_DOMAIN}:12201"
-        tag: "$WEB"
+        tag: "${WEB}"
 
   
 
