@@ -1,11 +1,11 @@
 #!/bin/bash
 
 # initialisation environment variable
-export $(cat .env)
+export $(cat .env_app_web)
 
 # Function
 # script name
-SCRIPTNAME="initialize-services.sh"
+SCRIPTNAME="initialize-app-web.sh"
 # Choose if script run as root (1=yes 0=no)
 ENABLE_VERIF_ROOT=1
 # have to check that the script is not already running (1=yes 0=no)
@@ -112,7 +112,7 @@ if [ "$ADMIN_PASSWORD" = "adminUser" ];then
         read ADMIN_PASSWORD
         validemessage "confirm admin password :  $ADMIN_PASSWORD"
         export ADMIN_PASSWORD=$ADMIN_PASSWORD
-        sed -i "s#adminUser#$ADMIN_PASSWORD#" ./.env
+        sed -i "s#adminUser#$ADMIN_PASSWORD#" ./.env_app_web
 
 fi
 export ADMIN_PASSWORD_CRYPT=$(docker run --rm httpd:2.4-alpine htpasswd -nbB admin $ADMIN_PASSWORD | cut -d ":" -f 2 )
@@ -123,10 +123,9 @@ if [ "$HTACCESS_PASSWORD" = "adminHtaccess" ];then
         displaymessage "Choose new HTACCESS password"
         read HTACCESS_PASSWORD
         validemessage "confirm HTACCESS password :  $HTACCESS_PASSWORD"
-        sed -i "s#adminHtaccess#$HTACCESS_PASSWORD#" ./.env
+        sed -i "s#adminHtaccess#$HTACCESS_PASSWORD#" ./.env_app_web
 fi
         export HTACCESS_PASSWORD_CRYPT=$(docker run --rm httpd:2.4-alpine htpasswd -nbB admin $HTACCESS_PASSWORD | cut -d ":" -f 2 )
-
 
 if [ "$CLUSTER_DOMAIN" = "mycluster.org" ];then
         displayerror "You don't have change your domain name."
@@ -137,9 +136,18 @@ if [ "$CLUSTER_DOMAIN" = "mycluster.org" ];then
         sed -i "s#mycluster.org#$CLUSTER_DOMAIN#" ./.env
 fi
 
+if [ "$DOMAIN" = "www.domain.org" ];then
+        displayerror "You don't have change your domain name."
+        displaymessage "Choose new domaine name"
+        read DOMAIN
+        validemessage "confirm Domaine Name :  $DOMAIN"
+        export DOMAIN=$DOMAIN
+        sed -i "s#www.domain.org#$DOMAIN#" ./.env_app_web
+fi
+
 if [ $RANDOM_SECRET = changeit ];then
 displayandexec "Generate random secret" &export RANDOM_SECRET=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
-sed -i "s#changeit#$RANDOM_SECRET#" ./.env
+sed -i "s#changeit#$RANDOM_SECRET#" ./.env_app_web
 fi
 
 # Directory verification
@@ -148,61 +156,37 @@ if [ ! -d $DIR_PERSISTANT_FOLDER ];then
 displayandexec "Create permanent directory" &mkdir -p $DIR_PERSISTANT_FOLDER
 fi
 
-# find docker gateway to environment variable dockerd-exporter
-export DOCKER_GWBRIDGE_IP=$(docker run --rm --net host alpine ip -o addr show docker_gwbridge | grep 'inet ' | cut -d " " -f 7 | cut -d"/" -f 1)
 
 
 
 # preparation and verification of the environment
 
-displaytitle 'Configuration Traefik'
-displayandexec "Create permanent directory for Traefik" &mkdir -p $DIR_PERSISTANT_FOLDER/traefik
-displayandexec "Copy configuration file traefik.toml" &cp -f ./traefik/traefik.toml $DIR_PERSISTANT_FOLDER/traefik/
-displayandexec "Change value in Traefik" &sed -i "s#CLUSTER_DOMAIN#$CLUSTER_DOMAIN#" $DIR_PERSISTANT_FOLDER/traefik/traefik.toml && sed -i "s#ADMIN_EMAIL#$ADMIN_EMAIL#" $DIR_PERSISTANT_FOLDER/traefik/traefik.toml
-displayandexec "Create ACME file" &touch  $DIR_PERSISTANT_FOLDER/traefik/acme.json && chmod 600 $DIR_PERSISTANT_FOLDER/traefik/acme.json
-displayandexec "Create persist Portainer folder"  &mkdir -p $DIR_PERSISTANT_FOLDER/portainer
-displayandexec "Create persist alertmanager folder"  &mkdir -p $DIR_PERSISTANT_FOLDER/alertmanager
-displayandexec "Create persist grafana folder"  &mkdir -p $DIR_PERSISTANT_FOLDER/grafana
-displayandexec "Create persist elasticsearch folder"  &mkdir -p $DIR_PERSISTANT_FOLDER/elasticsearch
-displayandexec "Create persist mongo folder"  &mkdir -p $DIR_PERSISTANT_FOLDER/mongo
-displayandexec "Create persist graylog folder"  &mkdir -p $DIR_PERSISTANT_FOLDER/graylog
-displayandexec "Create persist gitlab-runner folder"  &mkdir -p $DIR_PERSISTANT_FOLDER/gitlab-runner/{etc,home}
-displayandexec "Create persist gitlab folder"  &mkdir -p $DIR_PERSISTANT_FOLDER/gitlab/{etc,opt,log}
-
+displaytitle 'Important'
+displaymessage 'Necessite un conteneur Traefik pour fonctionner'
+displayandexec "Create permanent directory for App" &mkdir -p $DIR_PERSISTANT_FOLDER/$WEB
+displayandexec "Create permanent Sub directory for App" &mkdir -p $DIR_PERSISTANT_FOLDER/$WEB/{webroot,log,tmp,backup,sql,elasticsearch}
+displayandexec "Create permanent Sub directory for Node Mysql" &mkdir -p $DIR_PERSISTANT_FOLDER/$WEB/sql/{node1,node2,node3,node4,node5}
+displayandexec "Create permanent Sub directory for Node Elasticsearch" &mkdir -p $DIR_PERSISTANT_FOLDER/$WEB/elasticsearch/{esdata1,esdata2,esdata3,esdata4,esdata5}
 
 
 displaytitle 'Create docker network'
 
-displayandexec "Create netwok Docker for Traefik" &docker network create traefik-net --scope swarm -d overlay --opt encrypted=true
-displayandexec "Create network Docker for Metrics" &docker network create metrics-net --scope swarm -d overlay --opt encrypted=true
-displayandexec "Create network Docker for Admin" &docker network create admin-net --scope swarm -d overlay --opt encrypted=true
+displayandexec "Create netwok Docker for Mysql" &docker network create net-mysql-$WEB --scope swarm -d overlay --opt encrypted=true
+displayandexec "Create network Docker for Elasticsearch" &docker network create net-elk-$WEB --scope swarm -d overlay --opt encrypted=true
+displayandexec "Create network Docker for Web" &docker network create net-web-$WEB --scope swarm -d overlay --opt encrypted=true
+displayandexec "Create network Docker for Redis" &docker network create net-redis-$WEB --scope swarm -d overlay --opt encrypted=true
 
 
 displaytitle "Create docker"
 
 sleep 2
-displayandexec "CREATING INGRESS SERVICES STACK..." &docker stack deploy --compose-file docker-compose-ingress.yml ingress
-
-displayandexec "CREATING LOGS SERVICES STACK..." &docker stack deploy --compose-file docker-compose-log.yml logs
-sleep 5
-displayandexec "CREATING ADMINISTRATION SERVICES STACK..." &docker stack deploy --compose-file docker-compose-admin.yml admin
-
-displayandexec "CREATING METRICS SERVICES STACK..." &docker stack deploy --compose-file docker-compose-metrics.yml metrics
+displayandexec "CREATING APP WEB STACK..." &docker stack deploy --compose-file docker-web-site.yml $WEB
 
 
 displaytitle 'Check all sub domain name to manage your docker swarm'
 
 displaymessage "Check Graylog managment URL"
 verifyDns graylog.$CLUSTER_DOMAIN 
-displaymessage "Check Traefik managment URL"
-verifyDns traefik.$CLUSTER_DOMAIN 
-displaymessage "Check portainer managment Docker URL"
-verifyDns portainer.$CLUSTER_DOMAIN 
-displaymessage "Check Feeds managment URL"
-verifyDns feeds.$CLUSTER_DOMAIN 
-displaymessage "Check Grafana managment URL"
-verifyDns grafana.$CLUSTER_DOMAIN 
-displaymessage "Check Dashboard managment URL"
-verifyDns dashboard.$CLUSTER_DOMAIN prometheus
-displaymessage "Check Prometheus managment URL"
-verifyDns prometheus.$CLUSTER_DOMAIN
+displaymessage "Check Domain url"
+verifyDns $WEB
+
